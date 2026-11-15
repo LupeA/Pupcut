@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#141618" />
+  <meta name="description" content="Pup length takeoff calculator for pipe fitters. Pick fittings on each end, enter overall length, get cut length." />
+  <title>PupCut — Pipe Pup Takeoff</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <p class="brand-name">PupCut</p>
+        <p class="brand-tag">Field takeoff for pups</p>
+      </div>
+    </div>
+    <p class="formula-chip" id="formulaChip">Cut = overall − A − B − gaps</p>
+  </header>
+
+  <main class="layout">
+    <section class="diagram-panel" aria-label="Pup diagram">
+      <div class="diagram" id="diagram">
+        <div class="fitting fitting-a">
+          <span class="fitting-label" id="labelA">End A</span>
+          <span class="fitting-value" id="valueA">—</span>
+        </div>
+        <div class="pipe-run">
+          <div class="overall-dim">
+            <span class="dim-line"></span>
+            <span class="dim-text" id="overallDim">Overall</span>
+            <span class="dim-line"></span>
+          </div>
+          <div class="pipe-body">
+            <span class="pup-label">PUP</span>
+            <span class="pup-value" id="pupValue">—</span>
+          </div>
+        </div>
+        <div class="fitting fitting-b">
+          <span class="fitting-label" id="labelB">End B</span>
+          <span class="fitting-value" id="valueB">—</span>
+        </div>
+      </div>
+      <div class="result-card" id="resultCard" data-state="idle">
+        <p class="result-kicker">Pup / cut length</p>
+        <p class="result-main" id="resultMain">Enter a run</p>
+        <p class="result-sub" id="resultSub">Pick size, fittings, and overall length</p>
+        <button type="button" class="copy-btn" id="copyBtn" hidden>Copy length</button>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Takeoff inputs">
+      <div class="control-row">
+        <label class="field">
+          <span>Joint type</span>
+          <select id="jointType">
+            <option value="bw">Butt-weld (B16.9)</option>
+            <option value="th">Threaded</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Pipe size (NPS)</span>
+          <select id="nps"></select>
+        </label>
+      </div>
+
+      <div class="ends">
+        <fieldset class="end-card">
+          <legend>End A fitting</legend>
+          <label class="field">
+            <span>Type</span>
+            <select id="fitA"></select>
+          </label>
+          <label class="field custom-takeoff" id="customAWrap" hidden>
+            <span>Custom takeoff (in)</span>
+            <input id="customA" type="text" inputmode="decimal" placeholder="e.g. 3 or 3 1/8" />
+          </label>
+          <p class="takeoff-readout" id="takeoffA">Takeoff: —</p>
+        </fieldset>
+
+        <fieldset class="end-card">
+          <legend>End B fitting</legend>
+          <label class="field">
+            <span>Type</span>
+            <select id="fitB"></select>
+          </label>
+          <label class="field custom-takeoff" id="customBWrap" hidden>
+            <span>Custom takeoff (in)</span>
+            <input id="customB" type="text" inputmode="decimal" placeholder="e.g. 3 or 3 1/8" />
+          </label>
+          <p class="takeoff-readout" id="takeoffB">Takeoff: —</p>
+        </fieldset>
+      </div>
+
+      <div class="control-row">
+        <label class="field grow">
+          <span>Overall length (center-to-center)</span>
+          <input id="overall" type="text" inputmode="decimal" placeholder="40 1/2 or 40.5" autocomplete="off" />
+        </label>
+      </div>
+
+      <div class="control-row weld-row" id="weldRow">
+        <label class="field">
+          <span>Root gap per weld (in)</span>
+          <select id="gap">
+            <option value="0">0</option>
+            <option value="0.0625">1/16</option>
+            <option value="0.125" selected>1/8</option>
+            <option value="0.1875">3/16</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Welds in this pup</span>
+          <select id="weldCount">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+          </select>
+        </label>
+      </div>
+
+      <details class="help">
+        <summary>How pup takeoff works</summary>
+        <p>
+          Measure overall center-to-center (or face-to-face if that is how you laid it out).
+          Subtract each fitting’s takeoff, then subtract root gaps for butt-welds.
+        </p>
+        <p class="mono">
+          Pup = overall − takeoff<sub>A</sub> − takeoff<sub>B</sub> − (gap × welds)
+        </p>
+        <p>
+          Butt-weld values follow ASME B16.9 center-to-end charts. Threaded values use
+          common Class 3000 fitting allowances (center-to-end minus engagement). Always
+          verify on the job — makers can differ slightly.
+        </p>
+      </details>
+
+      <div class="breakdown" id="breakdown" hidden></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Shop check before you cut. Tables are a starting point, not a stamp.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
